@@ -3,6 +3,7 @@
 #include<stdlib.h>
 #include<unistd.h>
 #include<stdint.h>
+#include <stdbool.h>
 
 // 핀 번호 정의
 #define echo 4            // 초음파 센서 Echo 핀
