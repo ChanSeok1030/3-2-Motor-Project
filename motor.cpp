@@ -634,7 +634,7 @@ void execute_button_p2(byte btn_key)
         g_step_setting = g_step_size; // 확정되지 않은 변화내용이 있다면 미반영, 초기화
         set_display_page(PAGE_MODE_SELECTION);
       }
-      else if(p2_arrow_col==0 && p2_arrow_row==1)
+      else if(p2_arrow_col==0 && p2_arrow_row==1) //GO 버튼이 눌렸을 때 
       {
         g_step_size = g_step_setting; //설정값 저장
         String _ = get_serial(); // 수신을 위한 준비로 혹시나 남아있을 버퍼를 완전히 비우기

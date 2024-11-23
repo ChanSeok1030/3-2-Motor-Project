@@ -13,7 +13,7 @@
 #define pwm_pin 26        // PWM 제어 핀
 #define off_button 29     // OFF 버튼 핀
 
-volatile int interrupt_flag = 0; // 버튼 동작 중복 방지 플래그
+volatile bool interrupt_flag = 0; // 버튼 동작 중복 방지 플래그
 static float cup = 0;            // 기준 높이 저장 변수
 
 // 1번  full 버튼 동작
