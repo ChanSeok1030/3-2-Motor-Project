@@ -3,6 +3,8 @@
 #include<stdlib.h>
 #include<unistd.h>
 #include<stdint.h>
+#include<stdbool.h>
+#include<time.h>를
 
 #define limit 27 //Limit Switch
 
@@ -28,16 +30,14 @@ short push_switch[switch_num] = {3,4,5,6,28,26,25,1}; //스위치 GPIO 넘버
 
 
 
-
-
-void off_Motor() 
+void off_Motor() //좌우 모터 off
 {
     digitalWrite(output3,0);
     digitalWrite(output4,0);
     delay(2000);
 }
 
-void off()
+void off() //모든 모터 off
 {
     digitalWrite(output1,0);
     digitalWrite(output2,0);
@@ -78,7 +78,7 @@ void top()
      delayMicroseconds(2500000);
 }
 
-void middle_top()
+void middle_top() 
 {
     digitalWrite(output1,0);
     digitalWrite(output2,1);
@@ -88,12 +88,27 @@ void middle_top()
     delayMicroseconds(2500000);
 }
 
-void right()
+bool right()
 {
     digitalWrite(output3,1);
     digitalWrite(output4,0);
     delay(100);
+
+    clock_t start_time = clock(); 
+    if(digitalRead(limit) ==1 ) //리미트 버튼 눌릴시 
+    {
+        return true;
+    }
+
+    else if (((clock() - start_time) / CLOCKS_PER_SEC) > 5) //5초 초과 시 멈춤 
+    {
+       printf("Timeout! Limit switch not pressed.\n");
+       off(); // 모든 모터 정지
+       return false;
+    }
+     delay(10);
 }
+
 
 void right3()
 {
@@ -105,11 +120,24 @@ void right3()
     delayMicroseconds(1000000);
 }
 
-void left()
+bool left() //left는 끝까지 갔다가 리미트 스위치를 인지하면 리턴해서 case 문으로 복귀 5초 초과가 된다면 왼쪽으로 가는게 모든 모터 멈춤
 {
     digitalWrite(output3,0);
     digitalWrite(output4,1);
     delay(100);
+    clock_t start_time = clock(); 
+    if(digitalRead(limit) ==1 ) //리미트 버튼 눌릴시 
+    {
+        return true;
+    }
+
+    else if (((clock() - start_time) / CLOCKS_PER_SEC) > 5) //5초 초과 시 멈춤 
+    {
+       printf("Timeout! Limit switch not pressed.\n");
+       off(); // 모든 모터 정지
+       return false;
+    }
+    delay(10);
 }
 
 void left2()
@@ -156,106 +184,154 @@ void middle_under2()
 void handle_action(short action) 
 {
 switch(action){
-    case 0: // 1번째 스위치 L1입차 
-      top();
-      left();
-      if(digitalRead(limit) ==1 )
-      {
+    case 0: // 1번째 스위치 L1입차
+      
+     top();
+     bool flag = left();
+
+         if(flag == true){
         off_Motor();                   
         top_middle();
         right3();
         middle_under2();
-      }
+        
+        }
+        else if(flag == false)
+        {
+            printf("더이상 동작 하지 않습니다.\n");
+        }
       break;
     //=================break====================
 
-    case 1:
+    case 1://2번째 스위치 L1 출차
      middle();
-     left();
-     if(digitalRead(limit) ==1 )
+    bool flag = left();
+
+     if(flag == true )
      {
         off_Motor();
         middle_top();
         right3();
         top_under();
+        
      }
+    else if(flag == false)
+        {
+            printf("더이상 동작 하지 않습니다.\n");
+        }
      break;
     //=====================break=======================
 
-    case 2:
+    case 2://3번째 스위치 L2 입차
      top();
-     right();
-     if(digitalRead(limit) ==1 )
+     bool flag = right();
+   
+     
+     if(flag == true)
      {
         off_Motor();
         top_middle();
         left2();
         middle_under2();
+        
      }
+    else if(flag == false)
+        {
+            printf("더이상 동작 하지 않습니다.\n");
+        }
      break;
     //=========================break====================
-    case 3:
+    case 3://4번째 스위치 L2 출차
     middle();
-    right();
+    bool flag = right();
 
-    if(digitalRead(limit) ==1 )
+    if(flag == true)
     {
     off_Motor();
     middle_top();
     left2();
     top_under();
+    
     }
+    else if(flag == false)
+        {
+            printf("더이상 동작 하지 않습니다.\n");
+        }
+
     break;
     //=========================break========================
 
-    case 4:
+    case 4://5번째 스위치 L3 입차
     middle();
-    left();
-     if(digitalRead(limit) ==1 )
+    bool flag = left();
+     if(flag == true)
      {
         off_Motor();
         middle_under2();
         right3();
+        
      }
+    else if(flag == false)
+    {
+        printf("더이상 동작 하지 않습니다.\n");
+    }
+
     break;
     //=======================break=======================
 
-     case 5:
-     left();
+     case 5://6번째 스위치 L3 출차
+    bool flag = left();
 
-     if(digitalRead(limit) ==1 )
+     if(flag == true)
      {
         off_Motor();
         middle();
         right3();
         middle_under2();
+        
      }
+      else if(flag == false)
+    {
+        printf("더이상 동작 하지 않습니다.\n");
+    }
+
     break;
     //========================break=========================
 
-    case 6:
+    case 6://7번째 스위치 L4 입차
     middle();
-    right();
+    bool flag = right();
 
-    if(digitalRead(limit) ==1 )
+    if(flag == true)
     {
         off_Motor();
         middle_under2();
         left2();
+        
     } 
+    else if(flag == false)
+    {
+        printf("더이상 동작 하지 않습니다.\n");
+    }
+    
     break;
     //========================break============================
 
-    case 7:
-    right();
-    if(digitalRead(limit) ==1 )
+    case 7://8번째 스위치 L4 출차
+    bool flag = right();
+    if(flag == true)
     {
         off_Motor();
         middle();
         left2();
-        
         middle_under2();
+        
     }
+    else if(flag == false)
+    {
+        printf("더이상 동작 하지 않습니다.\n");
+    }
+   
     break;
 
     default:
