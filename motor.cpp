@@ -217,8 +217,10 @@ void loop()
   if(btn_key == BTN_NONE) ;
   else if(millis() > btn_debouncing_timer + btn_debouncing_delay) // 이거에 대해 설명
   {
+     // 500 milli라 치면 500 > 225 동작 후 btn_debouncing_timer = millis(); 대충 뭐 510이 저장된다 치자 
+     //금방 또 눌려서 millis 515 >515+225 = 735 성립이 안댐 즉 225 milli만큼의 차이가 필요하다는것 
     btn_debouncing_timer = millis();
-    if(g_page_id==PAGE_MODE_SELECTION) execute_button_p0(btn_key);   //그냥 애초에 이 화면임 연결되면 초기화면을 SETUP() 함수 208번째 줄에서 선언함 PAGE_MODE_SELECTION
+    if(g_page_id==PAGE_MODE_SELECTION) execute_button_p0(btn_key);   //초기화면을 SETUP() 함수 208번째 줄에서 선언함 PAGE_MODE_SELECTION
     else if(g_page_id==PAGE_MOVE_ABSOLUTE) execute_button_p1(btn_key); //초기에서 ma 선택되면 p1로 이동
     else if(g_page_id==PAGE_MOVE_RELATIVE) execute_button_p2(btn_key); //초기에서 mr선택되면 p2로 이동 
   }
@@ -307,7 +309,7 @@ void get_print_real_deg() // 통신으로 현재 각도 받아와서 정수값�
   delay(100);
   g_real_motor_pos = convert_serial_to_deg(get_serial()); //모터로 부터 현재 위치(16진수)를"0PO00003000"이런걸 받아와서 각도로 변환
 
-  lcd.setCursor(8,1);         //@@@@이 명령은 LCD 화면의 (8, 1) 위치로 커서를 이동시킵니다. 8, 1은 두 번째 행의 9번째 문자 위치
+  lcd.setCursor(8,1);         //이 명령은 LCD 화면의 (8, 1) 위치로 커서를 이동시킵니다. 8, 1은 두 번째 행의 9번째 문자 위치
   _print_deg(g_real_motor_pos);  
 }
 void _print_deg(long deg)   //void set_display_page(byte page_id) 함수에서 PAGE_MODE_SELECTION에서 MA.MR 페이지가 선택 되었을 때 각도를  띄우는거 
@@ -344,6 +346,10 @@ long convert_deg_to_serial(long a)
   float converted = ((float)n / 286720) * 72000; 
   return round(converted); 
 }
+//00002EBB가 현재각도로 들어왔다치자 00002EBB/143360 *360 = 30.00083임 소수점 없애주기 위해서 720에 100을 곱한다. 720은 전체각도범위 제한을 위함
+// 00002EBB/143360 *360 = 3000.083이 나오게 된다 
+// 각도가 720이기 떄문에 143360*2 = 286720, 360*2 비율을 맞춰줌 즉 표시가 -719.99까지 나올수있기때문임 
+//기본식 : 엔코더 값(16진수 현재 위치)/엔코더 360도 펄스 * 360
 
 // LCD 쉴드 버튼 입력
 byte read_LCD_buttons()
