@@ -377,7 +377,7 @@ void execute_button_p0(byte btn_key) //실드 키패드 눌리면 호출되는 �
         set_display_page(PAGE_MOVE_RELATIVE);                   //0행에서 셀렉트 누른게 아니라면 MR화면 띄우기 
       }
   }
-  else // @@@@@ MoveAbsolute , Move Relative 화면인 상태이기에 위아래 화살표만 컨트롤하는것 만약 좌우를 누르면 계속해서 > 행에 바꿔 표현되는것 ????? @@@@
+  else 
   {
     lcd.setCursor(0, p0_arrow_row);         // > 0행0열 지우기 셀렉트 제외하고 up,down,right,left 버튼 눌렀을 때 
     lcd.print(" ");                         //0행에 있던 화살표 지우기 
